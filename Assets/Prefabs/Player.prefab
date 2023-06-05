@@ -240,6 +240,7 @@ MonoBehaviour:
   CrashSound: {fileID: 8300000, guid: e7ee25a47d63b46cdaf65480d62b405c, type: 3}
   JumpSound: {fileID: 8300000, guid: 08ab7053d586c458db3774d33c141a4b, type: 3}
   _jumpForce: 600
+  _jumpExtraForce: 200
   _gravityModifier: 2
   _isGrounded: 1
 --- !u!54 &101121090766647754

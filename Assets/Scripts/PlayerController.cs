@@ -13,7 +13,8 @@ public class PlayerController : MonoBehaviour
     public AudioClip JumpSound;
 
     [Header("Private Variables:")]
-    [SerializeField] private int _jumpForce = 10;
+    [SerializeField] private int _jumpForce = 600;
+    [SerializeField] private int _jumpExtraForce = 200;
     [SerializeField] private float _gravityModifier;
     [SerializeField] private bool _isGrounded = true;
 
@@ -21,6 +22,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rbPlayer;
     private Animator _playerAnim;
     private AudioSource _playerAudio;
+    private bool _firstJump = false;
+    internal bool _doubleSpeed = false;
     internal bool _theGameIsOver = false;
 
     void Start()
@@ -29,16 +32,36 @@ public class PlayerController : MonoBehaviour
         _playerAnim = GetComponent<Animator>();
         _playerAudio = GetComponent<AudioSource>();
         Physics.gravity *= _gravityModifier;
+        
     }
 
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded && !_theGameIsOver)
+        if (Input.GetKey(KeyCode.Z))
+        {
+            _doubleSpeed = true;
+            _playerAnim.SetFloat("Speed_Multiplier", 2.0f);
+        }
+        else if (_doubleSpeed)
+        {
+            _doubleSpeed = false;
+            _playerAnim.SetFloat("Speed_Multiplier", 1.0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded && !_theGameIsOver && !_firstJump)
         {
             _rbPlayer.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
             _isGrounded = false;
+            _firstJump = true;
             _playerAnim.SetTrigger("Jump_trig");
+            DirtyParticles.Stop();
+            _playerAudio.PlayOneShot(JumpSound, 1.0f);
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && !_isGrounded && !_theGameIsOver && _firstJump)
+        {
+            _rbPlayer.AddForce(Vector3.up * _jumpExtraForce, ForceMode.Impulse);
+            _firstJump = false;
             DirtyParticles.Stop();
             _playerAudio.PlayOneShot(JumpSound, 1.0f);
         }
@@ -49,6 +72,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             _isGrounded = true;
+            _firstJump = false;
             DirtyParticles.Play();
         }
 

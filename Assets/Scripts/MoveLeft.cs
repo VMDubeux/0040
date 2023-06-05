@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class MoveLeft : MonoBehaviour
 {
-    [SerializeField] private float _speedMoveLeft;
+    private float _speedMoveLeft = 10;
     private int _leftBound = -18;
     private PlayerController _playerController;
+    private GameObject _obstacles;
 
     void Start()
     {
@@ -18,12 +19,9 @@ public class MoveLeft : MonoBehaviour
     {
         if (_playerController._theGameIsOver == false)
         {
-            transform.Translate(Vector3.left * _speedMoveLeft * Time.deltaTime);
+            if (_playerController._doubleSpeed == true) transform.Translate(Vector3.left * (_speedMoveLeft * 2.0f) * Time.deltaTime, Space.World);
+            else transform.Translate(Vector3.left * _speedMoveLeft * Time.deltaTime, Space.World);
         }
-
-        if (gameObject.CompareTag("Obstacle") && transform.position.x < _leftBound) 
-        {
-            Destroy(gameObject);
-        }
+        if (gameObject.CompareTag("Obstacle") && transform.position.x < _leftBound) Destroy(gameObject);
     }
 }
